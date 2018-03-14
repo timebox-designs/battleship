@@ -1,0 +1,29 @@
+.board-row {
+  display: flex;
+
+  .square {
+    width: 2.5em;
+    height: 2.5em;
+    padding-top: .5em;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .square:not(:first-child) {
+    border: 1px solid #F3F3F3;
+  }
+
+  .square.ship {
+    background-color: #F7F7F7;
+  }
+
+  .square.hover {
+    background-color: blue;
+  }
+}
+
+.board-row:first-child {
+  .square {
+    border: none;
+  }
+}

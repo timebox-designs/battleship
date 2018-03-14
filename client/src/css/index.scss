@@ -1,0 +1,11 @@
+@import 'bootstrap/scss/bootstrap';
+@import 'chat';
+@import 'board';
+
+.container {
+  position: relative;
+}
+
+.game {
+  height: 100vh;
+}

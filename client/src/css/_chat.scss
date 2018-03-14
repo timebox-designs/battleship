@@ -1,0 +1,22 @@
+.chat {
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  .message-container {
+    flex: 7;
+
+    .list-group-item {
+      border: 0;
+    }
+  }
+
+  .form-container {
+    flex: 1;
+  }
+
+  > div {
+    margin-top: 1em;
+  }
+}
