@@ -6,14 +6,14 @@ import sailsIOClient from 'sails.io.js';
 let io = sailsIOClient(socketIOClient);
 io.sails.url = 'http://localhost:1337';
 
-const errorCodes = [400, 500];
+const errorCodes = [400, 404, 500];
 const match = (first) => (second) => first === second;
 
 const socket = {
     get(url, options = {}) {
         return new Promise((resolve, reject) => {
             io.socket.get(url, options, (data, jwr) => {
-                console.log('get', jwr);
+                console.log('get', data, jwr);
                 if (errorCodes.some(match(jwr.statusCode))) return reject(jwr.statusCode);
                 return resolve(data);
             });
@@ -23,7 +23,7 @@ const socket = {
     post(url, options = {}) {
         return new Promise((resolve, reject) => {
             io.socket.post(url, options, (data, jwr) => {
-                console.log('post', jwr);
+                console.log('post', data, jwr);
                 if (errorCodes.some(match(jwr.statusCode))) return reject(jwr.statusCode);
                 return resolve(data);
             });

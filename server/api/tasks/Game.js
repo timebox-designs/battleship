@@ -36,7 +36,7 @@ module.exports = {
       .then(game => Game.update(id, {room: `game-${id}`, subscription: game.subscription + 1}))
       .then(() => Game.findOne({id}).populate('board')
         .then(game => {
-          // if (game.subscription > MAX_PLAYERS) return Promise.reject();
+          if (game.subscription > MAX_PLAYERS) return Promise.reject();
           return Promise.resolve({...game, player: game.subscription - 1});
         }));
   },

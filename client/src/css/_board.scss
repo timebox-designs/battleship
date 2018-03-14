@@ -1,29 +1,58 @@
 .board-row {
   display: flex;
 
-  .square {
+  .board-col {
     width: 2.5em;
     height: 2.5em;
     padding-top: .5em;
     text-align: center;
     font-weight: 400;
+    cursor: pointer;
   }
 
-  .square:not(:first-child) {
-    border: 1px solid #F3F3F3;
+  .board-col:not(:first-child) {
+    border: 1px solid $grid;
   }
 
-  .square.ship {
-    background-color: #F7F7F7;
+  .board-col.ship {
+    background-color: $battleship;
   }
 
-  .square.hover {
-    background-color: blue;
+  .board-col.hit {
+    background: $battleship url(../img/boom.svg) no-repeat 5px 5px;
+  }
+
+  .board-col.miss {
+    background: url(../img/boom.svg) no-repeat 5px 5px;
   }
 }
 
 .board-row:first-child {
-  .square {
+  cursor: default;
+
+  .board-col {
     border: none;
   }
+}
+
+.c1 .board-col:nth-child(2),
+.c2 .board-col:nth-child(3),
+.c3 .board-col:nth-child(4),
+.c4 .board-col:nth-child(5),
+.c5 .board-col:nth-child(6),
+.c6 .board-col:nth-child(7),
+.c7 .board-col:nth-child(8),
+.c8 .board-col:nth-child(9) {
+  background-color: $collision-detected;
+}
+
+.s1 .board-col:nth-child(2),
+.s2 .board-col:nth-child(3),
+.s3 .board-col:nth-child(4),
+.s4 .board-col:nth-child(5),
+.s5 .board-col:nth-child(6),
+.s6 .board-col:nth-child(7),
+.s7 .board-col:nth-child(8),
+.s8 .board-col:nth-child(9) {
+  background-color: $ship-selected;
 }

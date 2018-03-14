@@ -1,3 +1,4 @@
+@import 'custom-bootstrap';
 @import 'bootstrap/scss/bootstrap';
 @import 'chat';
 @import 'board';
@@ -8,4 +9,30 @@
 
 .game {
   height: 100vh;
+}
+
+.shipyard {
+  list-style: none;
+  padding: 0;
+
+  .ship {
+    .segment {
+      display: inline-block;
+      background: $ship;
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 3px;
+      border: 1px solid $ship-border;
+    }
+    .name {
+      min-width: 8em;
+      float: right;
+    }
+  }
+
+  .ship.selected {
+    .segment {
+      background: $ship-selected;
+    }
+  }
 }

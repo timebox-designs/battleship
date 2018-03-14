@@ -10,7 +10,7 @@ class Home extends Component {
     handleClick = () => {
         fetch.post('/game')
             .then(game => this.setState({game: game.id}))
-            .catch(error => console.error(error));
+            .catch(error => console.log(error));
     };
 
     render() {
