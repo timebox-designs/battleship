@@ -7,8 +7,70 @@
   position: relative;
 }
 
-.game {
-  height: 100vh;
+@keyframes bounce {
+  40% {
+    transform:translateX(-10%);
+  }
+  60% {
+    transform:translateX(0);
+  }
+  80% {
+    transform:translateX(-10%);
+  }
+  100% {
+    transform:translateX(0);
+  }
+}
+
+.title {
+  font-family: 'Bevan', cursive;
+  font-weight: 400;
+  transform: scale(1, 1.5);
+}
+
+.splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8em;
+  height: 80vh;
+
+  .row:nth-child(1) {
+    flex-grow: 4;
+  }
+
+  .row:nth-child(2) {
+    flex-grow: 1;
+  }
+
+  .splash-title {
+    font-family: 'Bevan', cursive;
+    font-weight: 400;
+    font-size: 10rem;
+    text-shadow: 1px 1px 2px $dark-slate-grey;
+    transform: scale(1, 2);
+    color: $dark-cyan;
+  }
+
+  .splash-img {
+    position: absolute;
+    top: 1.5em;
+    right: 1em;
+  }
+
+  .splash-btn {
+    font-size: 2em;
+    font-weight: 400;
+
+    .splash-icon {
+      font-size: 2em;
+      vertical-align: middle;
+    }
+
+    .splash-icon:hover {
+      animation: bounce 1.2s ease-out;
+    }
+  }
 }
 
 .shipyard {

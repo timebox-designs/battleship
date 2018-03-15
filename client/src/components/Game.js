@@ -28,9 +28,11 @@ const battleship = SHIPS[1];
 class Game extends Component {
     state = {
         ship: {...battleship, orientation: ORIENTATION.horizontal},
-        board: [],
+        boardA: [],
+        boardB: [],
         deployed: [],
-        cell: EMPTY_CELL
+        cell: EMPTY_CELL,
+        mode: 0
     };
 
     componentDidMount() {
@@ -41,7 +43,8 @@ class Game extends Component {
                 const {board, player} = game;
 
                 this.setState({
-                    board: withLabels(board[player].pieces),
+                    boardA: withLabels(board[1 - player].pieces),
+                    boardB: withLabels(board[player].pieces),
                     player: game.player
                 });
 
@@ -55,66 +58,94 @@ class Game extends Component {
     handleSelectionChange = (ship) => this.setState({ship});
 
     handleClick = (cell) => {
-        let {board, deployed, ship} = this.state;
+        let {boardB, deployed, ship} = this.state;
         const strategy = OrientationStrategy[ship.orientation];
 
-        if (isEmptyCell(cell) || strategy.isCollision(board, cell, ship)) return;
+        if (isEmptyCell(cell) || strategy.isCollision(boardB, cell, ship)) return;
 
         const alreadyDeployed = deployed.filter(item => item.id === ship.id)[0];
         if (alreadyDeployed) {
-            board = strategy.removeShip(board, alreadyDeployed);
+            boardB = strategy.removeShip(boardB, alreadyDeployed);
             deployed = _.reject(deployed, active => active.id === ship.id)
         }
 
         this.setState({
-            board: strategy.addShip(board, cell, ship),
+            boardB: strategy.addShip(boardB, cell, ship),
             deployed: [...deployed, {cell, ...ship}],
             cell: EMPTY_CELL
         });
     };
 
     render() {
-        const {board, deployed, cell, ship, player, error} = this.state;
+        const {boardA, boardB, deployed, cell, ship, player, error} = this.state;
         const strategy = OrientationStrategy[ship.orientation];
 
         if (error) return <Redirect to={`/error/${error}`}/>;
 
+        let mode = 0;
+        if (deployed.length === SHIPS.length) mode += 1;
+
         return (
-            <div className='container'>
-                <div className='row'>
-                    <div className='col-8'>
-                        <div className='row'>
-                            <div className='col'>
+            <div className='d-flex' style={{height: '100vh'}}>
+                <section style={{width: '75vw'}}>
+                    <div className='container'>
+                        <div className='row' style={{marginTop: '4em'}}>
+                            <div className='offset-1 col'>
+                                <h1 className='title'>BATTLESHIP</h1>
+                            </div>
+                        </div>
+
+                        <div className='row' style={{marginTop: '4em'}}>
+                            {(mode === 0) &&
+                            <div className='offset-1 col-5'>
                                 <ShipyardContainer
                                     ships={SHIPS}
                                     selected={ship}
                                     onSelectionChange={this.handleSelectionChange}/>
-                            </div>
-                            <div className='col'>
+                            </div>}
+                            {(mode === 1) &&
+                            <div className='offset-1 col-5'>
+                                <h4>Target acquired</h4>
                                 <Board
-                                    board={board}
-                                    ship={strategy.segments(board, cell, ship)}
+                                    board={boardA}
+                                    ship={() => ({})}
+                                    onClick={this.handleClick}
+                                    onMouseEnter={this.handleMouseEnter}
+                                    onMouseLeave={this.handleMouseLeave}/>
+                            </div>}
+                            <div className='col-5'>
+                                <h4>Your ships</h4>
+                                <Board
+                                    board={boardB}
+                                    ship={strategy.segments(boardB, cell, ship)}
                                     onClick={this.handleClick}
                                     onMouseEnter={this.handleMouseEnter}
                                     onMouseLeave={this.handleMouseLeave}/>
                             </div>
                         </div>
-                        <div className='row'>
-                            <div className='col mt-4'>
-                                <button className='btn btn-info btn-lg float-right'
-                                        disabled={deployed.length !== SHIPS.length}>
-                                    Engage enemy
-                                </button>
-                            </div>
-                        </div>
+                    </div>
+                </section>
+
+                <section style={{width: '25vw', height: '100vh'}}>
+                    <ChatContainer player={player}/>
+                </section>
+            </div>
+        );
+    }
+}
+
+/*
+                <div className='row'>
+                    <div className='col mt-4'>
+                        <button className='btn btn-info btn-lg float-right'
+                                disabled={deployed.length !== SHIPS.length}>
+                            Engage enemy
+                        </button>
                     </div>
                     <div className='col'>
                         <ChatContainer player={player}/>
                     </div>
                 </div>
-            </div>
-        );
-    }
-}
+*/
 
 export default Game;

@@ -27,7 +27,7 @@ class ChatContainer extends Component {
         const {messages} = this.state;
 
         return (
-            <div className='chat bg-info'>
+            <div className='chat'>
                 <MessageContainer player={this.props.player || 0} messages={messages}/>
                 <FormContainer onSubmit={this.handleSubmit}/>
             </div>

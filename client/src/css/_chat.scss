@@ -1,5 +1,7 @@
 .chat {
-  height: 100vh;
+  height: 100%;
+  background-color: $dark-cyan;
+  padding: 1em;
 
   display: flex;
   flex-direction: column;
@@ -14,9 +16,6 @@
 
   .form-container {
     flex: 1;
-  }
-
-  > div {
     margin-top: 1em;
   }
 }
