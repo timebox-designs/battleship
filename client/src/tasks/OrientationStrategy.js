@@ -9,7 +9,7 @@ const shipTemplate = (col) => `s${col}`;
 
 const collisionTemplate = (col) => `c${col}`;
 
-const isEmptyCell = (cell) => cell.row === 0 && cell.col === 0;
+const isEmptyCell = (cell) => cell.row === -1 && cell.col === -1;
 
 const isSegment = (value) => value === SHIP_SEGMENT;
 
@@ -39,7 +39,7 @@ const removeShip = (board, ship) => {
 };
 
 const collision = (boardVector, shipVector) =>
-    _.intersection(boardVector, shipVector).length > 0 || _.last(shipVector) > BOARD_SIZE;
+    _.intersection(boardVector, shipVector).length > 0 || _.last(shipVector) >= BOARD_SIZE;
 
 
 // Horizontal ship strategy
@@ -51,6 +51,7 @@ const horizontal = {
     },
 
     segments: (board, cell, ship) => (index) => {
+        // console.log('segments', index);
         if (isEmptyCell(cell) || index !== cell.row) return '';
 
         const template = horizontal.isCollision(board, cell, ship) ? collisionTemplate : shipTemplate;

@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-    pieces: {
+    coordinates: {
       type: 'array'
     },
 
@@ -16,4 +16,3 @@ module.exports = {
     }
   }
 };
-

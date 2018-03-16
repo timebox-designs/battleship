@@ -9,11 +9,10 @@ import ChatContainer from './ChatContainer';
 import ShipyardContainer from './ShipyardContainer';
 import Board from './Board';
 
-const EMPTY_CELL = {row: 0, col: 0};
+const EMPTY_CELL = {row: -1, col: -1};
 
-const LABLES = 'ABCDEFGH'.split('');
-const withLabels = (board) => [LABLES, ...board].map((row, i) => [i, ...row]);
-const isEmptyCell = (cell) => cell.row === 0 && cell.col === 0;
+const isEmptyCell = (cell) => cell.row === EMPTY_CELL.row && cell.col === EMPTY_CELL.col;
+const isValidCell = (cell) => cell.row !== EMPTY_CELL.row && cell.col !== EMPTY_CELL.col;
 
 const SHIPS = [
     {id: 0, name: 'Aircraft Carrier', length: 5},
@@ -43,8 +42,8 @@ class Game extends Component {
                 const {board, player} = game;
 
                 this.setState({
-                    boardA: withLabels(board[1 - player].pieces),
-                    boardB: withLabels(board[player].pieces),
+                    boardA: board[1 - player].coordinates,
+                    boardB: board[player].coordinates,
                     player: game.player
                 });
 
@@ -53,9 +52,20 @@ class Game extends Component {
             .catch(error => this.setState({error}));
     }
 
-    handleMouseEnter = (cell) => (cell.row && cell.col) && this.setState({cell});
-    handleMouseLeave = () => this.setState({cell: EMPTY_CELL});
     handleSelectionChange = (ship) => this.setState({ship});
+    handleMouseEnter = (cell) => isValidCell(cell) && this.setState({cell});
+    handleMouseLeave = () => this.setState({cell: EMPTY_CELL});
+
+    handleEngageClick = () => {
+        const {boardB} = this.state;
+        console.log(boardB);
+
+        // socket.post(`/board/2`, boardB)
+        //     .then(() => {
+        this.setState({mode: 1});
+        //
+        // });
+    };
 
     handleClick = (cell) => {
         let {boardB, deployed, ship} = this.state;
@@ -77,13 +87,10 @@ class Game extends Component {
     };
 
     render() {
-        const {boardA, boardB, deployed, cell, ship, player, error} = this.state;
+        const {boardA, boardB, deployed, cell, ship, player, error, mode} = this.state;
         const strategy = OrientationStrategy[ship.orientation];
 
         if (error) return <Redirect to={`/error/${error}`}/>;
-
-        let mode = 0;
-        if (deployed.length === SHIPS.length) mode += 1;
 
         return (
             <div className='d-flex' style={{height: '100vh'}}>
@@ -102,6 +109,11 @@ class Game extends Component {
                                     ships={SHIPS}
                                     selected={ship}
                                     onSelectionChange={this.handleSelectionChange}/>
+                                <button className='btn btn-primary float-right'
+                                        disabled={deployed.length === 0}
+                                        onClick={this.handleEngageClick}>
+                                    Engage Enemy <i className='fas fa-anchor'/>
+                                </button>
                             </div>}
                             {(mode === 1) &&
                             <div className='offset-1 col-5'>
@@ -114,7 +126,7 @@ class Game extends Component {
                                     onMouseLeave={this.handleMouseLeave}/>
                             </div>}
                             <div className='col-5'>
-                                <h4>Your ships</h4>
+                                <h4>Battle Squadron</h4>
                                 <Board
                                     board={boardB}
                                     ship={strategy.segments(boardB, cell, ship)}
@@ -133,19 +145,5 @@ class Game extends Component {
         );
     }
 }
-
-/*
-                <div className='row'>
-                    <div className='col mt-4'>
-                        <button className='btn btn-info btn-lg float-right'
-                                disabled={deployed.length !== SHIPS.length}>
-                            Engage enemy
-                        </button>
-                    </div>
-                    <div className='col'>
-                        <ChatContainer player={player}/>
-                    </div>
-                </div>
-*/
 
 export default Game;

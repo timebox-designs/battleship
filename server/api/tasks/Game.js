@@ -1,22 +1,11 @@
-const a = [
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 'S', 'S', 'S', 0, 0, 0],
+const coordinates = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0]
-];
-
-const b = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 'S', 0, 0, 0],
-  [0, 0, 0, 0, 'S', 0, 0, 0],
-  [0, 0, 0, 0, 'S', 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
@@ -26,7 +15,7 @@ module.exports = {
   createGame() {
     return Game.create()
       .then(game =>
-        Promise.all([a, b].map((pieces) => Board.create({pieces, game: game.id})))
+        Promise.all([0, 1].map(() => Board.create({coordinates, game: game.id})))
           .then(() => Promise.resolve(game))
       )
   },

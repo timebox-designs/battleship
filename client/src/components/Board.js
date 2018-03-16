@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+const LABLES = 'ABCDEFGH'.split('');
+const withLabels = (board) => [LABLES, ...board].map((row, i) => [i, ...row]);
 
 const asPiece = (value) => {
     switch (value) {
@@ -42,7 +44,7 @@ const Row = (props) => {
         <div className={`board-row ${ship(index)}`}>
             {row.map((column, i) =>
                 <Column column={column}
-                        index={i}
+                        index={i - 1}
                         key={i}
                         onClick={(col) => props.onClick({row: index, col})}
                         onMouseEnter={(col) => props.onMouseEnter({row: index, col})}
@@ -57,10 +59,10 @@ const Board = (props) => {
 
     return (
         <div>
-            {board.map((row, i) =>
+            {withLabels(board).map((row, i) =>
                 <Row row={row}
                      ship={ship}
-                     index={i}
+                     index={i - 1}
                      key={i}
                      onClick={props.onClick}
                      onMouseEnter={props.onMouseEnter}
