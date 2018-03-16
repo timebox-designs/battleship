@@ -7,7 +7,7 @@ const ShipyardContainer = ({ships, selected, onSelectionChange}) => {
         <div>
             <div className='row'>
                 <div className='col-10'>
-                    <h3>Deploy Ships</h3>
+                    <h4>Deploy Squadron</h4>
                     <Shipyard
                         ships={ships}
                         selected={selected}

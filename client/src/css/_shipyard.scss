@@ -1,0 +1,26 @@
+.shipyard {
+  margin-top: 1em;
+  padding: 0;
+  list-style: none;
+
+  .ship {
+    .segment {
+      display: inline-block;
+      background: $ship;
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 3px;
+      border: 1px solid $ship-border;
+    }
+    .name {
+      min-width: 8em;
+      float: right;
+    }
+  }
+
+  .ship.selected {
+    .segment {
+      background: $ship-selected;
+    }
+  }
+}

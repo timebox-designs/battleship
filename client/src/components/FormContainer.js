@@ -26,7 +26,7 @@ class FormContainer extends Component {
                 <form onSubmit={this.handleSubmit}>
 
                     <div className='input-group'>
-                        <textarea className='form-control' placeholder='Say something already...' value={this.state.value}
+                        <textarea className='form-control' placeholder='Ahoy...' value={this.state.value}
                                   onChange={this.handleChange} rows={3}/>
                         <div className='input-group-append'>
                             <button className='btn btn-secondary input-group-text' type='submit'>

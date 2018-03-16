@@ -11,13 +11,14 @@ $dark-cyan: #059ca3;
 $light-grey: #dcd4cf;
 $dark-slate-grey: #2c3232;
 $dark-sea-green: #9ba194;
+$fresh-face: #e34159;
 
-$ship: #838387;
-$ship-border: #656569;
+$grid: lighten($dark-slate-grey, 7.5%);
+$ship: $light-grey;
+$ship-border: $grid;
 $ship-selected: $dark-cyan;
-$collision-detected: #e34159;
-$battleship: #cbcbd2;
-$grid: #f3f3f3;
+$collision-detected: $fresh-face;
+$battleship: $light-grey;
 
 $primary: $dark-cyan !default;
 
