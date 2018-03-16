@@ -59,7 +59,7 @@ const Board = (props) => {
 
     return (
         <div>
-            {withLabels(board).map((row, i) =>
+            {withLabels(board.coordinates).map((row, i) =>
                 <Row row={row}
                      ship={ship}
                      index={i - 1}

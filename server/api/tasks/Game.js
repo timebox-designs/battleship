@@ -26,7 +26,9 @@ module.exports = {
       .then(() => Game.findOne({id}).populate('board')
         .then(game => {
           // if (game.subscription > MAX_PLAYERS) return Promise.reject();
-          return Promise.resolve({...game, player: (game.subscription - 1) % 2});
+
+          const board = game.board.map(board => ({...board, coordinates}));
+          return Promise.resolve({...game, board, player: (game.subscription - 1) % 2});
         }));
   },
 

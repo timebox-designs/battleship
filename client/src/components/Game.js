@@ -24,14 +24,18 @@ const SHIPS = [
 
 const battleship = SHIPS[1];
 
+const MODE = {
+    setup: 'setup',
+    play: 'play'
+};
+
 class Game extends Component {
     state = {
         ship: {...battleship, orientation: ORIENTATION.horizontal},
-        boardA: [],
-        boardB: [],
+        board: [],
         deployed: [],
         cell: EMPTY_CELL,
-        mode: 0
+        mode: MODE.setup
     };
 
     componentDidMount() {
@@ -41,12 +45,7 @@ class Game extends Component {
             .then(game => {
                 const {board, player} = game;
 
-                this.setState({
-                    boardA: board[1 - player].coordinates,
-                    boardB: board[player].coordinates,
-                    player: game.player
-                });
-
+                this.setState({board, player});
                 socket.on(game.room, console.log);
             })
             .catch(error => this.setState({error}));
@@ -57,40 +56,50 @@ class Game extends Component {
     handleMouseLeave = () => this.setState({cell: EMPTY_CELL});
 
     handleEngageClick = () => {
-        const {boardB} = this.state;
-        console.log(boardB);
+        const {board, player} = this.state;
+        const playerBoard = board[player];
 
-        // socket.post(`/board/2`, boardB)
-        //     .then(() => {
-        this.setState({mode: 1});
-        //
-        // });
+        socket.post(`/board/${playerBoard.id}`, {board: playerBoard})
+            .then(() => {
+                this.setState({mode: MODE.play});
+            });
     };
 
     handleClick = (cell) => {
-        let {boardB, deployed, ship} = this.state;
+        let {board, player, ship, deployed} = this.state;
+        let playerBoard = board[player];
+
         const strategy = OrientationStrategy[ship.orientation];
 
-        if (isEmptyCell(cell) || strategy.isCollision(boardB, cell, ship)) return;
+        if (isEmptyCell(cell) || strategy.isCollision(playerBoard, cell, ship)) return;
 
         const alreadyDeployed = deployed.filter(item => item.id === ship.id)[0];
         if (alreadyDeployed) {
-            boardB = strategy.removeShip(boardB, alreadyDeployed);
+            playerBoard = strategy.removeShip(playerBoard, alreadyDeployed);
             deployed = _.reject(deployed, active => active.id === ship.id)
         }
 
+        playerBoard = strategy.addShip(playerBoard, cell, ship);
+
         this.setState({
-            boardB: strategy.addShip(boardB, cell, ship),
+            board: player === 0 ? [playerBoard, board[1]] : [board[0], playerBoard],
             deployed: [...deployed, {cell, ...ship}],
             cell: EMPTY_CELL
         });
     };
 
+    handleFireClick = (cell) => {
+        if (!isValidCell(cell)) return;
+
+        console.log('fire on cell', cell);
+    };
+
     render() {
-        const {boardA, boardB, deployed, cell, ship, player, error, mode} = this.state;
+        const {board, deployed, cell, ship, player, error, mode} = this.state;
         const strategy = OrientationStrategy[ship.orientation];
 
         if (error) return <Redirect to={`/error/${error}`}/>;
+        if (board.length === 0) return null;
 
         return (
             <div className='d-flex' style={{height: '100vh'}}>
@@ -101,9 +110,8 @@ class Game extends Component {
                                 <h1 className='title'>BATTLESHIP</h1>
                             </div>
                         </div>
-
                         <div className='row' style={{marginTop: '4em'}}>
-                            {(mode === 0) &&
+                            {(mode === MODE.setup) &&
                             <div className='offset-1 col-5'>
                                 <ShipyardContainer
                                     ships={SHIPS}
@@ -115,22 +123,22 @@ class Game extends Component {
                                     Engage Enemy <i className='fas fa-anchor'/>
                                 </button>
                             </div>}
-                            {(mode === 1) &&
+                            {(mode === MODE.play) &&
                             <div className='offset-1 col-5'>
                                 <h4>Target acquired</h4>
                                 <Board
-                                    board={boardA}
+                                    board={board[1 - player]}
                                     ship={() => ({})}
-                                    onClick={this.handleClick}
+                                    onClick={this.handleFireClick}
                                     onMouseEnter={this.handleMouseEnter}
                                     onMouseLeave={this.handleMouseLeave}/>
                             </div>}
                             <div className='col-5'>
                                 <h4>Battle Squadron</h4>
                                 <Board
-                                    board={boardB}
-                                    ship={strategy.segments(boardB, cell, ship)}
-                                    onClick={this.handleClick}
+                                    board={board[player]}
+                                    ship={mode === MODE.setup ? strategy.segments(board[player], cell, ship) : () => ({})}
+                                    onClick={mode === MODE.setup ? this.handleClick : () => ({})}
                                     onMouseEnter={this.handleMouseEnter}
                                     onMouseLeave={this.handleMouseLeave}/>
                             </div>

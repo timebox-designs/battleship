@@ -13,7 +13,7 @@ const socket = {
     get(url, options = {}) {
         return new Promise((resolve, reject) => {
             io.socket.get(url, options, (data, jwr) => {
-                console.log('get', data, jwr);
+                // console.log('get', data, jwr);
                 if (errorCodes.some(match(jwr.statusCode))) return reject(jwr.statusCode);
                 return resolve(data);
             });
@@ -23,7 +23,7 @@ const socket = {
     post(url, options = {}) {
         return new Promise((resolve, reject) => {
             io.socket.post(url, options, (data, jwr) => {
-                console.log('post', data, jwr);
+                // console.log('post', data, jwr);
                 if (errorCodes.some(match(jwr.statusCode))) return reject(jwr.statusCode);
                 return resolve(data);
             });

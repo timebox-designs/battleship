@@ -27,10 +27,10 @@ const vector = (start, length) => _.range(start, start + length);
 const shipCoordinates = (row, col) => _.zip(row, col);
 
 const addShip = (board, shipCoordinates, segment) => {
-    const copy = board.map(row => [...row]);
+    const coordinates = board.coordinates.map(row => [...row]);
 
-    shipCoordinates.forEach(coordinate => copy[coordinate[0]][coordinate[1]] = segment);
-    return copy;
+    shipCoordinates.forEach(coordinate => coordinates[coordinate[0]][coordinate[1]] = segment);
+    return {...board, coordinates};
 };
 
 const removeShip = (board, ship) => {
@@ -46,12 +46,11 @@ const collision = (boardVector, shipVector) =>
 
 const horizontal = {
     isCollision: (board, cell, ship) => {
-        const boardVector = board[cell.row].reduce(toSegments, []);
+        const boardVector = board.coordinates[cell.row].reduce(toSegments, []);
         return collision(boardVector, vector(cell.col, ship.length));
     },
 
     segments: (board, cell, ship) => (index) => {
-        // console.log('segments', index);
         if (isEmptyCell(cell) || index !== cell.row) return '';
 
         const template = horizontal.isCollision(board, cell, ship) ? collisionTemplate : shipTemplate;
@@ -70,7 +69,7 @@ const horizontal = {
 
 const vertical = {
     isCollision: (board, cell, ship) => {
-        const boardVector = transpose(board)[cell.col].reduce(toSegments, []);
+        const boardVector = transpose(board.coordinates)[cell.col].reduce(toSegments, []);
         return collision(boardVector, vector(cell.row, ship.length));
     },
 
