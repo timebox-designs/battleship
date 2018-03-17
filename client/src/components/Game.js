@@ -46,7 +46,7 @@ class Game extends Component {
                 const {board, player} = game;
 
                 this.setState({board, player});
-                socket.on(game.room, console.log);
+                socket.on('setup', console.log);
             })
             .catch(error => this.setState({error}));
     }
@@ -57,10 +57,10 @@ class Game extends Component {
 
     handleEngageClick = () => {
         const {board, player} = this.state;
-        const playerBoard = board[player];
 
-        socket.post(`/board/${playerBoard.id}`, {board: playerBoard})
-            .then(() => {
+        socket.put(`/board/${board[player].id}`, {board: board[player]})
+            .then((board) => {
+                console.log(board);
                 this.setState({mode: MODE.play});
             });
     };

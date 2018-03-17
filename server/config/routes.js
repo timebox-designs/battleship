@@ -46,8 +46,8 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  'post /game': 'GameController.create',
-  'get /game/:id': 'GameController.subscribe',
-  'post /board/:id': 'BoardController.create'
+  'post /game': 'GameController.createGame',
+  'get /game/:id': 'GameController.joinGame',
+  'put /board/:id': 'BoardController.updateGame'
 
 };

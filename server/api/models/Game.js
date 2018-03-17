@@ -7,13 +7,14 @@
 
 module.exports = {
   attributes: {
-    subscription: {
+    players: {
       type: 'integer',
       defaultsTo: 0
     },
 
-    room: {
-      type: 'string'
+    inPlay: {
+      type: 'integer',
+      defaultsTo: 0
     },
 
     board: {

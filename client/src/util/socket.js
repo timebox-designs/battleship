@@ -20,6 +20,16 @@ const socket = {
         });
     },
 
+    put(url, options = {}) {
+        return new Promise((resolve, reject) => {
+            io.socket.put(url, options, (data, jwr) => {
+                console.log('put', data, jwr);
+                if (errorCodes.some(match(jwr.statusCode))) return reject(jwr.statusCode);
+                return resolve(data);
+            });
+        });
+    },
+
     post(url, options = {}) {
         return new Promise((resolve, reject) => {
             io.socket.post(url, options, (data, jwr) => {

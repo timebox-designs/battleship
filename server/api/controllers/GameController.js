@@ -6,27 +6,33 @@
  */
 
 const Game = require('../tasks/Game');
+const MAX_PLAYERS = 2;
 
 module.exports = {
-  create(req, res) {
+  createGame(req, res) {
     this.log(req);
 
     Game.createGame()
       .then(game => res.send(game));
   },
 
-  subscribe(req, res) {
+  joinGame(req, res) {
     this.log(req);
 
     if (!req.isSocket) {
       return res.badRequest();
     }
 
-    Game.subscribe({id: req.params.id})
+    Game.incrementPlayerCount(req.params.id)
       .then(game => {
-        sails.sockets.join(req.socket, game.room);
-        res.send(game);
-      }).catch(() => res.notFound());
+        // if (game.players > MAX_PLAYERS) return res.notFound();
+
+        Game.findGame(game.id)
+          .then(game => {
+            sails.sockets.join(req.socket, `game-${game.id}`);
+            res.send(game);
+          });
+      });
   },
 
   log({method, url}) {
