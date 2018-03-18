@@ -2,14 +2,12 @@ import React from 'react';
 import classNames from 'classnames';
 import _ from 'underscore';
 
-const Ship = ({name, length, onClick}) => {
-    return (
-        <div onClick={onClick}>
-            {_.range(length).map(i => <span key={i} className='segment'/>)}
-            <span className='name'>{name}</span>
-        </div>
-    );
-};
+const Ship = ({name, length, onClick}) => (
+    <div onClick={onClick}>
+        {_.range(length).map(i => <span key={i} className='segment'/>)}
+        <span className='name'>{name}</span>
+    </div>
+);
 
 const Shipyard = ({ships, selected, onChange}) => {
     const isSelected = (ship) => ship.id === selected.id;
