@@ -12,9 +12,6 @@ import Board from './Board';
 
 const EMPTY_CELL = {row: -1, col: -1};
 
-const isEmptyCell = (cell) => cell.row === EMPTY_CELL.row && cell.col === EMPTY_CELL.col;
-const isValidCell = (cell) => cell.row !== EMPTY_CELL.row && cell.col !== EMPTY_CELL.col;
-
 const SHIPS = [
     {id: 0, name: 'Aircraft Carrier', length: 5},
     {id: 1, name: 'Battleship', length: 4},
@@ -61,7 +58,7 @@ class Game extends Component {
     }
 
     handleSelectionChange = (ship) => this.setState({ship});
-    handleMouseEnter = (cell) => isValidCell(cell) && this.setState({cell});
+    handleMouseEnter = (cell) => this.setState({cell});
     handleMouseLeave = () => this.setState({cell: EMPTY_CELL});
 
     handleEngageClick = () => {
@@ -77,7 +74,7 @@ class Game extends Component {
 
         const strategy = OrientationStrategy[ship.orientation];
 
-        if (isEmptyCell(cell) || strategy.isCollision(playerBoard, cell, ship)) return;
+        if (strategy.isCollision(playerBoard, cell, ship)) return;
 
         const alreadyDeployed = deployed.filter(item => item.id === ship.id)[0];
         if (alreadyDeployed) {
@@ -95,8 +92,6 @@ class Game extends Component {
     };
 
     handleFireClick = (cell) => {
-        if (!isValidCell(cell)) return;
-
         console.log('fire on cell', cell);
     };
 
