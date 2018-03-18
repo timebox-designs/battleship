@@ -27,6 +27,18 @@ const MODE = {
     play: 'play'
 };
 
+const isSetup = (mode) => mode === MODE.setup;
+const isPlay = (mode) => mode === MODE.play;
+
+const Button = (props) => (
+    <button className='btn btn-primary'
+            disabled={props.disabled}
+            onClick={props.onClick}>
+        {props.children}
+    </button>
+);
+
+
 class Game extends Component {
     state = {
         mode: MODE.setup,
@@ -106,25 +118,20 @@ class Game extends Component {
             <div className='d-flex' style={{height: '100vh'}}>
                 <section style={{width: '75vw'}}>
                     <div className='container'>
-                        <div className='row' style={{marginTop: '4em'}}>
+                        <div className='row margin-top'>
                             <div className='offset-1 col'>
                                 <h1 className='title'>BATTLESHIP</h1>
                             </div>
                         </div>
-                        <div className='row' style={{marginTop: '4em'}}>
-                            {(mode === MODE.setup) &&
+                        <div className='row margin-top'>
+                            {isSetup(mode) &&
                             <div className='offset-1 col-5'>
                                 <ShipyardContainer
                                     ships={SHIPS}
                                     selected={ship}
                                     onSelectionChange={this.handleSelectionChange}/>
-                                <button className='btn btn-primary float-right'
-                                        disabled={deployed.length === 0}
-                                        onClick={this.handleEngageClick}>
-                                    Engage Enemy <i className='fas fa-anchor'/>
-                                </button>
                             </div>}
-                            {(mode === MODE.play) &&
+                            {isPlay(mode) &&
                             <div className='offset-1 col-5'>
                                 <h4>Firing Range</h4>
                                 <Board
@@ -139,10 +146,19 @@ class Game extends Component {
                                 <h4>Battle Squadron</h4>
                                 <Board
                                     board={board[player]}
-                                    ship={mode === MODE.setup ? strategy.segments(board[player], cell, ship) : () => ({})}
-                                    onClick={mode === MODE.setup ? this.handleClick : () => ({})}
+                                    ship={isSetup(mode) ? strategy.segments(board[player], cell, ship) : _.noop}
+                                    onClick={isSetup(mode) ? this.handleClick : _.noop}
                                     onMouseEnter={this.handleMouseEnter}
                                     onMouseLeave={this.handleMouseLeave}/>
+                                {isSetup(mode) &&
+                                <div className='row mt-4'>
+                                    <div className='offset-7 col'>
+                                        <Button disabled={deployed.length === 0}
+                                                onClick={this.handleEngageClick}>
+                                            Engage Enemy <i className='fas fa-anchor'/>
+                                        </Button>
+                                    </div>
+                                </div>}
                             </div>
                         </div>
                     </div>
