@@ -31,15 +31,12 @@ const MODE = {
 const isSetup = (mode) => mode === MODE.setup;
 const isPlay = (mode) => mode === MODE.play;
 
-
-// const targetTemplate = (col) => `t${col}`;
-
-const copyCoordinates = (coordinates) => coordinates.map(r => [...r]);
-const copyGameBoard = (game) => game.map(board => ({...board, coordinates: copyCoordinates(board.coordinates)}));
-
-
 const isHit = (value) => value === 'X';
 const isMiss = (value) => value === 'x';
+
+const copyCoordinates = (coordinates) => coordinates.map(row => [...row]);
+const copyGameBoard = (game) => game.map(board => ({...board, coordinates: copyCoordinates(board.coordinates)}));
+
 
 class Game extends Component {
     state = {
@@ -48,7 +45,9 @@ class Game extends Component {
         board: [],
         deployed: [],
         cell: EMPTY_CELL,
-        targets: 0
+        targets: 0,
+        turn: 0, // player 1
+        gameOver: false
     };
 
     componentDidMount() {
@@ -57,7 +56,7 @@ class Game extends Component {
         socket.get(`/game/${id}`)
             .then(game => {
                 const {board, player} = game;
-                this.setState({board, player});
+                this.setState({board, player, id});
             })
             .catch(error => this.setState({error}));
 
@@ -72,32 +71,46 @@ class Game extends Component {
         });
 
         socket.on('fire', message => {
-            const {board, player, targets} = this.state;
+            const {board, player, targets, turn} = this.state;
             const {cell, opponent, hitOrMiss} = message;
 
             const me = player === opponent;
-            const inPlay = me ? player : 1 - player;
-
             const boardCopy = copyGameBoard(board);
 
-            boardCopy[inPlay].coordinates[cell.row][cell.col] = hitOrMiss;
+            boardCopy[(me ? player : opponent)].coordinates[cell.row][cell.col] = hitOrMiss;
 
             this.setState({
                 board: boardCopy,
-                targets: !me && isHit(hitOrMiss) ? targets - 1 : targets
-            });
+                targets: !me && isHit(hitOrMiss) ? targets - 1 : targets,
+                turn: 1 - turn
+            }, () => this.callGame())
+        });
+
+        socket.on('over', message => {
+            console.log(`player ${message.player} won`);
+            this.setState({gameOver: true});
         });
     }
 
+    callGame = () => {
+        const {id, player, targets, inPlay} = this.state;
+
+        if (inPlay > 1 && targets === 0) {
+            socket.put(`/game/${id}/over`, {player});
+        }
+    };
+
     fireOnOpponent = (cell) => {
-        const {board, player} = this.state;
+        const {board, player, inPlay, turn} = this.state;
         const opponent = 1 - player;
-        const contents = board[opponent].coordinates[cell.row][cell.col];
 
-        if (isHit(contents) || isMiss(contents)) return;
+        const targetArea = board[opponent].coordinates[cell.row][cell.col];
 
-        socket.put(`/board/${board[opponent].id}/fire`, {cell, opponent});
-        // .then(() => update turn);
+        if (isHit(targetArea) || isMiss(targetArea)) return;
+
+        if (turn === player && inPlay > 1) {
+            socket.put(`/board/${board[opponent].id}/fire`, {cell, opponent});
+        }
     };
 
     engageEnemy = () => {
@@ -135,7 +148,7 @@ class Game extends Component {
     };
 
     render() {
-        const {board, deployed, cell, ship, player, error, mode, targets} = this.state;
+        const {board, deployed, cell, ship, player, error, mode, targets, gameOver} = this.state;
         const strategy = OrientationStrategy[ship.orientation];
 
         if (error) return <Redirect to={`/error/${error}`}/>;
@@ -144,6 +157,7 @@ class Game extends Component {
         return (
             <div className='d-flex' style={{height: '100vh'}}>
                 <section style={{width: '75vw'}}>
+                    {!gameOver &&
                     <div className='container'>
                         <div className='row margin-top'>
                             <div className='offset-1 col'>
@@ -188,7 +202,15 @@ class Game extends Component {
                                 </div>}
                             </div>
                         </div>
-                    </div>
+                    </div>}
+                    {gameOver &&
+                    <div className='container'>
+                        <div className='row margin-top'>
+                            <div className='col'>
+                                <h1 className='title'>Game Over</h1>
+                            </div>
+                        </div>
+                    </div>}
                 </section>
 
                 <section style={{width: '25vw', height: '100vh'}}>

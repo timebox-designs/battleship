@@ -33,6 +33,17 @@ module.exports = {
       });
   },
 
+  gameOver(req, res) {
+    this.log(req);
+    if (!req.isSocket) return res.badRequest();
+
+    const {id} = req.params;
+    const {player} = req.body;
+
+    sails.sockets.broadcast(`game-${id}`, 'over', {player});
+    res.ok();
+  },
+
   log({method, url}) {
     sails.log(method, url);
   }
