@@ -8,6 +8,7 @@ import OrientationStrategy from '../tasks/OrientationStrategy';
 import ChatContainer from './ChatContainer';
 import ShipyardContainer from './ShipyardContainer';
 import TargetLabel from './TargetLabel';
+import Button from './Button';
 import Board from './Board';
 
 const EMPTY_CELL = {row: -1, col: -1};
@@ -30,14 +31,11 @@ const MODE = {
 const isSetup = (mode) => mode === MODE.setup;
 const isPlay = (mode) => mode === MODE.play;
 
-const Button = (props) => (
-    <button className='btn btn-primary'
-            disabled={props.disabled}
-            onClick={props.onClick}>
-        {props.children}
-    </button>
-);
 
+// const targetTemplate = (col) => `t${col}`;
+
+const copyCoordinates = (coordinates) => coordinates.map(r => [...r]);
+const copyGameBoard = (game) => game.map(board => ({...board, coordinates: copyCoordinates(board.coordinates)}));
 
 class Game extends Component {
     state = {
@@ -61,26 +59,49 @@ class Game extends Component {
 
         socket.on('setup', message => {
             const {player} = this.state;
+            const opponent = 1 - player;
 
             this.setState({
-                targets: message.targets[1 - player],
+                targets: message.targets[opponent],
                 inPlay: message.inPlay
+            });
+        });
+
+        socket.on('fire', message => {
+            const {board, player} = this.state;
+            const {row, col} = message.cell;
+
+            const inPlay = message.player === player ? player : 1 - player;
+            const boardCopy = copyGameBoard(board);
+
+            boardCopy[inPlay].coordinates[row][col] = message.hitOrMiss;
+
+            this.setState({
+                board: boardCopy
             });
         });
     }
 
-    handleSelectionChange = (ship) => this.setState({ship});
-    handleMouseEnter = (cell) => this.setState({cell});
-    handleMouseLeave = () => this.setState({cell: EMPTY_CELL});
+    fireOnOpponent = (cell) => {
+        const {board, player} = this.state;
+        const opponent = 1 - player;
 
-    handleEngageClick = () => {
+        socket.put(`/board/${board[opponent].id}/fire`, {cell, player: opponent});
+        // .then(() => update turn);
+    };
+
+    engageEnemy = () => {
         const {board, player} = this.state;
 
         socket.put(`/board/${board[player].id}`, {board: board[player]})
             .then(() => this.setState({mode: MODE.play}));
     };
 
-    handleClick = (cell) => {
+    changeActiveShip = (ship) => this.setState({ship});
+    activateCell = (cell) => this.setState({cell});
+    clearCell = () => this.setState({cell: EMPTY_CELL});
+
+    placeShipOnBoard = (cell) => {
         let {board, player, ship, deployed} = this.state;
         let playerBoard = board[player];
 
@@ -101,10 +122,6 @@ class Game extends Component {
             deployed: [...deployed, {cell, ...ship}],
             cell: EMPTY_CELL
         });
-    };
-
-    handleFireClick = (cell) => {
-        console.log('fire on cell', cell);
     };
 
     render() {
@@ -129,17 +146,17 @@ class Game extends Component {
                                 <ShipyardContainer
                                     ships={SHIPS}
                                     selected={ship}
-                                    onSelectionChange={this.handleSelectionChange}/>
+                                    onSelectionChange={this.changeActiveShip}/>
                             </div>}
                             {isPlay(mode) &&
                             <div className='offset-1 col-5'>
                                 <h4>Firing Range</h4>
                                 <Board
                                     board={board[1 - player]}
-                                    ship={() => ({})}
-                                    onClick={this.handleFireClick}
-                                    onMouseEnter={this.handleMouseEnter}
-                                    onMouseLeave={this.handleMouseLeave}/>
+                                    ship={_.noop}
+                                    onClick={this.fireOnOpponent}
+                                    onMouseEnter={this.activateCell}
+                                    onMouseLeave={this.clearCell}/>
                                 <TargetLabel targets={targets}/>
                             </div>}
                             <div className='col-5'>
@@ -147,14 +164,14 @@ class Game extends Component {
                                 <Board
                                     board={board[player]}
                                     ship={isSetup(mode) ? strategy.segments(board[player], cell, ship) : _.noop}
-                                    onClick={isSetup(mode) ? this.handleClick : _.noop}
-                                    onMouseEnter={this.handleMouseEnter}
-                                    onMouseLeave={this.handleMouseLeave}/>
+                                    onClick={isSetup(mode) ? this.placeShipOnBoard : _.noop}
+                                    onMouseEnter={this.activateCell}
+                                    onMouseLeave={this.clearCell}/>
                                 {isSetup(mode) &&
                                 <div className='row mt-4'>
                                     <div className='offset-7 col'>
                                         <Button disabled={deployed.length === 0}
-                                                onClick={this.handleEngageClick}>
+                                                onClick={this.engageEnemy}>
                                             Engage Enemy <i className='fas fa-anchor'/>
                                         </Button>
                                     </div>

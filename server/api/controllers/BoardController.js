@@ -32,6 +32,35 @@ module.exports = {
       });
   },
 
+  fireOnShip(req, res) {
+    this.log(req);
+    if (!req.isSocket) return res.badRequest();
+
+    const {id} = req.params;
+    const {player, cell} = req.body;
+
+    Board.findBoard(id)
+      .then(board => {
+
+        const {row, col} = cell;
+        const isHit = board.coordinates[row][col] === 'S';
+
+        board.coordinates[row][col] = isHit ? 'X' : 'x';
+
+        Board.updateCoordinates(id, board.coordinates)
+          .then(() => {
+
+            sails.sockets.broadcast(`game-${board.game}`, 'fire', {
+              player,
+              cell,
+              hitOrMiss: board.coordinates[row][col]
+            });
+
+            res.ok()
+          });
+      });
+  },
+
   log({method, url}) {
     sails.log(method, url);
   }

@@ -48,6 +48,7 @@ module.exports.routes = {
 
   'post /game': 'GameController.createGame',
   'get /game/:id': 'GameController.joinGame',
-  'put /board/:id': 'BoardController.updateBoard'
+  'put /board/:id': 'BoardController.updateBoard',
+  'put /board/:id/fire': 'BoardController.fireOnShip'
 
 };

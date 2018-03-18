@@ -24,8 +24,14 @@
   }
 
   .board-col.miss {
+    background-color: $dark-cyan;
+  }
+
+  /*
+  .board-col.miss {
     background: url(../img/boom.svg) no-repeat 5px 5px;
   }
+  */
 }
 
 .board-row:first-child {
@@ -56,4 +62,15 @@
 .s6 .board-col:nth-child(8),
 .s7 .board-col:nth-child(9) {
   background-color: $ship-selected;
+}
+
+.t0 .board-col:nth-child(2),
+.t1 .board-col:nth-child(3),
+.t2 .board-col:nth-child(4),
+.t3 .board-col:nth-child(5),
+.t4 .board-col:nth-child(6),
+.t5 .board-col:nth-child(7),
+.t6 .board-col:nth-child(8),
+.t7 .board-col:nth-child(9) {
+  background-color: $target;
 }

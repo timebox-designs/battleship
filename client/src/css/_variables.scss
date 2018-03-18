@@ -13,15 +13,16 @@ $dark-slate-grey: #2c3232;
 $dark-sea-green: #9ba194;
 $fresh-face: #e34159;
 
+$primary: $dark-cyan !default;
+$dark: $dark-slate-grey !default;
+
 $grid: lighten($dark-slate-grey, 7.5%);
 $ship: $light-grey;
 $ship-border: $grid;
 $ship-selected: $dark-cyan;
 $collision-detected: $fresh-face;
 $battleship: $light-grey;
-
-$primary: $dark-cyan !default;
-$dark: $dark-slate-grey !default;
+$target: $dark-sea-green;
 
 // Links
 //
