@@ -39,6 +39,7 @@ const copyGameBoard = (game) => game.map(board => ({...board, coordinates: copyC
 
 
 const isHit = (value) => value === 'X';
+const isMiss = (value) => value === 'x';
 
 class Game extends Component {
     state = {
@@ -91,6 +92,9 @@ class Game extends Component {
     fireOnOpponent = (cell) => {
         const {board, player} = this.state;
         const opponent = 1 - player;
+        const contents = board[opponent].coordinates[cell.row][cell.col];
+
+        if (isHit(contents) || isMiss(contents)) return;
 
         socket.put(`/board/${board[opponent].id}/fire`, {cell, opponent});
         // .then(() => update turn);
