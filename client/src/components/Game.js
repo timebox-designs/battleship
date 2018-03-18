@@ -7,6 +7,7 @@ import ORIENTATION from '../tasks/Orientation';
 import OrientationStrategy from '../tasks/OrientationStrategy';
 import ChatContainer from './ChatContainer';
 import ShipyardContainer from './ShipyardContainer';
+import TargetLabel from './TargetLabel';
 import Board from './Board';
 
 const EMPTY_CELL = {row: -1, col: -1};
@@ -31,11 +32,12 @@ const MODE = {
 
 class Game extends Component {
     state = {
+        mode: MODE.setup,
         ship: {...battleship, orientation: ORIENTATION.horizontal},
         board: [],
         deployed: [],
         cell: EMPTY_CELL,
-        mode: MODE.setup
+        targets: 0
     };
 
     componentDidMount() {
@@ -44,11 +46,18 @@ class Game extends Component {
         socket.get(`/game/${id}`)
             .then(game => {
                 const {board, player} = game;
-
                 this.setState({board, player});
-                socket.on('setup', console.log);
             })
             .catch(error => this.setState({error}));
+
+        socket.on('setup', message => {
+            const {player} = this.state;
+
+            this.setState({
+                targets: message.targets[1 - player],
+                inPlay: message.inPlay
+            });
+        });
     }
 
     handleSelectionChange = (ship) => this.setState({ship});
@@ -59,10 +68,7 @@ class Game extends Component {
         const {board, player} = this.state;
 
         socket.put(`/board/${board[player].id}`, {board: board[player]})
-            .then((board) => {
-                console.log(board);
-                this.setState({mode: MODE.play});
-            });
+            .then(() => this.setState({mode: MODE.play}));
     };
 
     handleClick = (cell) => {
@@ -95,7 +101,7 @@ class Game extends Component {
     };
 
     render() {
-        const {board, deployed, cell, ship, player, error, mode} = this.state;
+        const {board, deployed, cell, ship, player, error, mode, targets} = this.state;
         const strategy = OrientationStrategy[ship.orientation];
 
         if (error) return <Redirect to={`/error/${error}`}/>;
@@ -125,13 +131,14 @@ class Game extends Component {
                             </div>}
                             {(mode === MODE.play) &&
                             <div className='offset-1 col-5'>
-                                <h4>Target acquired</h4>
+                                <h4>Firing Range</h4>
                                 <Board
                                     board={board[1 - player]}
                                     ship={() => ({})}
                                     onClick={this.handleFireClick}
                                     onMouseEnter={this.handleMouseEnter}
                                     onMouseLeave={this.handleMouseLeave}/>
+                                <TargetLabel targets={targets}/>
                             </div>}
                             <div className='col-5'>
                                 <h4>Battle Squadron</h4>

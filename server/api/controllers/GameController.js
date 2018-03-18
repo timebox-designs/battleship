@@ -18,16 +18,14 @@ module.exports = {
 
   joinGame(req, res) {
     this.log(req);
-
-    if (!req.isSocket) {
-      return res.badRequest();
-    }
+    if (!req.isSocket) return res.badRequest();
 
     Game.incrementPlayerCount(req.params.id)
       .then(game => {
         // if (game.players > MAX_PLAYERS) return res.notFound();
 
         Game.findGame(game.id)
+          .then(Game.stripCoordinates)
           .then(game => {
             sails.sockets.join(req.socket, `game-${game.id}`);
             res.send(game);
