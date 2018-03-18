@@ -37,6 +37,9 @@ const isPlay = (mode) => mode === MODE.play;
 const copyCoordinates = (coordinates) => coordinates.map(r => [...r]);
 const copyGameBoard = (game) => game.map(board => ({...board, coordinates: copyCoordinates(board.coordinates)}));
 
+
+const isHit = (value) => value === 'X';
+
 class Game extends Component {
     state = {
         mode: MODE.setup,
@@ -68,16 +71,19 @@ class Game extends Component {
         });
 
         socket.on('fire', message => {
-            const {board, player} = this.state;
-            const {row, col} = message.cell;
+            const {board, player, targets} = this.state;
+            const {cell, opponent, hitOrMiss} = message;
 
-            const inPlay = message.player === player ? player : 1 - player;
+            const me = player === opponent;
+            const inPlay = me ? player : 1 - player;
+
             const boardCopy = copyGameBoard(board);
 
-            boardCopy[inPlay].coordinates[row][col] = message.hitOrMiss;
+            boardCopy[inPlay].coordinates[cell.row][cell.col] = hitOrMiss;
 
             this.setState({
-                board: boardCopy
+                board: boardCopy,
+                targets: !me && isHit(hitOrMiss) ? targets - 1 : targets
             });
         });
     }
@@ -86,7 +92,7 @@ class Game extends Component {
         const {board, player} = this.state;
         const opponent = 1 - player;
 
-        socket.put(`/board/${board[opponent].id}/fire`, {cell, player: opponent});
+        socket.put(`/board/${board[opponent].id}/fire`, {cell, opponent});
         // .then(() => update turn);
     };
 

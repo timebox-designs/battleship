@@ -37,7 +37,7 @@ module.exports = {
     if (!req.isSocket) return res.badRequest();
 
     const {id} = req.params;
-    const {player, cell} = req.body;
+    const {cell, opponent} = req.body;
 
     Board.findBoard(id)
       .then(board => {
@@ -51,8 +51,8 @@ module.exports = {
           .then(() => {
 
             sails.sockets.broadcast(`game-${board.game}`, 'fire', {
-              player,
               cell,
+              opponent,
               hitOrMiss: board.coordinates[row][col]
             });
 
