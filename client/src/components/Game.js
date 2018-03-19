@@ -50,7 +50,7 @@ class Game extends Component {
         gameOver: false
     };
 
-    componentDidMount() {
+    componentWillMount() {
         let id = this.props.match.params.id;
 
         socket.get(`/game/${id}`)
@@ -87,7 +87,7 @@ class Game extends Component {
         });
 
         socket.on('over', message => {
-            console.log(`player ${message.player} won`);
+            // console.log(`player ${message.player} won`);
             this.setState({gameOver: true});
         });
     }
@@ -160,8 +160,11 @@ class Game extends Component {
                     {!gameOver &&
                     <div className='container'>
                         <div className='row margin-top'>
-                            <div className='offset-1 col-5'>
-                                <h1 className='title'>BATTLESHIP</h1>
+                            <div className='offset-1 col'>
+                                <h1 className='title'>
+                                    BATTLESHIP
+                                    <small>It's your turn</small>
+                                </h1>
                             </div>
                         </div>
                         <div className='row margin-top'>
