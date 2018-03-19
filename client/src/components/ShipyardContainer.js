@@ -6,7 +6,11 @@ const ShipyardContainer = ({ships, selected, onSelectionChange}) => (
     <div>
         <div className='row'>
             <div className='col-10'>
-                <h4>Deploy Squadron</h4>
+                <h4 className='_tooltip'>
+                    Deploy Squadron <sup><i className='fas fa-info-circle'/></sup>
+                    <small className="_tooltiptext font-weight-light">Unlike the board game, only one ship is required to play</small>
+                </h4>
+
                 <Shipyard
                     ships={ships}
                     selected={selected}

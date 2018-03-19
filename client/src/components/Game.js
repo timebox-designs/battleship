@@ -160,13 +160,13 @@ class Game extends Component {
                     {!gameOver &&
                     <div className='container'>
                         <div className='row margin-top'>
-                            <div className='offset-1 col'>
+                            <div className='offset-1 col-5'>
                                 <h1 className='title'>BATTLESHIP</h1>
                             </div>
                         </div>
                         <div className='row margin-top'>
                             {isSetup(mode) &&
-                            <div className='offset-1 col-5'>
+                            <div className='offset-1 col-5 background'>
                                 <ShipyardContainer
                                     ships={SHIPS}
                                     selected={ship}

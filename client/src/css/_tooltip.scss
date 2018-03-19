@@ -1,0 +1,40 @@
+._tooltip {
+  position: relative;
+  display: inline-block;
+
+  ._tooltiptext {
+    visibility: hidden;
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    width: 17em;
+    margin-left: -3.75em;
+    padding: 6px 8px;
+    background-color: $dark-slate-grey;
+    color: white;
+    text-align: center;
+    border-radius: 3px;
+    z-index: 1;
+  }
+
+  ._tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: $dark-slate-grey transparent transparent transparent;
+  }
+
+  .fa-info-circle {
+    color: $dark-sea-green;
+  }
+}
+
+._tooltip:hover {
+  ._tooltiptext {
+    visibility: visible;
+  }
+}

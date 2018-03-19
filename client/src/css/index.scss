@@ -3,6 +3,7 @@
 @import 'chat';
 @import 'board';
 @import 'shipyard';
+@import 'tooltip';
 
 .container {
   position: relative;
@@ -82,3 +83,15 @@
 .margin-top {
   margin-top: 4em;
 }
+
+.background:before {
+  content: "";
+  display: inline-block;
+  width: 450px;
+  height: 450px;
+  background: url(../img/battleship.jpg) no-repeat;
+  position: absolute;
+  left: 2em;
+  top: 11em;
+}
+
